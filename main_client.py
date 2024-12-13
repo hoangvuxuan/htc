@@ -4,7 +4,7 @@ from subprocess import Popen
 def open_play_online():
 
     try:
-        Popen(["python", "./client/client1.py"])
+        Popen(["python", "client1.py"])
     except Exception as e:
         print(f"Error opening Play Online: {e}")
 

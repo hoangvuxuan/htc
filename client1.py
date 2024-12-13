@@ -23,6 +23,8 @@ class TicTacToeClient:
         if len(sys.argv) > 1:
             ai = sys.argv[1]
             self.client.send(f"{ai}".encode('utf-8'))
+        else:
+            self.client.send(f"fuck".encode('utf-8'))
 
 
 

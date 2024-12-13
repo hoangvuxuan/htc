@@ -14,16 +14,13 @@ class TicTacToeServer:
 # Đưa client vào hàng đợi
     def handle_client(self, client_socket, addr):
         print(f"Client connected: {addr}")
-        play_AI = ""
-        try:
-            play_AI = client_socket.recv(2048).decode('utf-8')      
-        except Exception:
-            print(Exception)
 
-        if play_AI == "AI": 
-            threading.Thread(target=demoAI, args=(client_socket, self.check_winner, self.is_draw)).start()
-        else:
+        if client_socket.recv(2048).decode('utf-8') != "AI": 
             self.client_queue.put(client_socket)  
+            print(self.client_queue.qsize())         
+        else:
+            threading.Thread(target=demoAI, args=(client_socket, self.check_winner, self.is_draw)).start()
+
 
 
 
@@ -39,6 +36,7 @@ class TicTacToeServer:
         client_socket.close()
 
     def match_clients(self):
+        
         while True:
             if self.client_queue.qsize() >= 2:   
                 client1 = self.client_queue.get()
