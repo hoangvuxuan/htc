@@ -24,7 +24,7 @@ class TicTacToeClient:
             ai = sys.argv[1]
             self.client.send(f"{ai}".encode('utf-8'))
         else:
-            self.client.send(f"fuck".encode('utf-8'))
+            self.client.send(f"".encode('utf-8'))
 
 
 
@@ -43,6 +43,7 @@ class TicTacToeClient:
 
     def replay(self):
         self.client.send("REPLAY".encode('utf-8'))
+        print("----rep")
 
     def update_scoreboard(self):
         self.win_label.config(text=f"Wins: {self.win_count}")

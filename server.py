@@ -9,7 +9,8 @@ class TicTacToeServer:
         self.server.bind((host, port))
         self.server.listen(10)
         self.client_queue = queue.Queue()  
-        self.games = {}   
+        self.games = {} 
+     
 
 # Đưa client vào hàng đợi
     def handle_client(self, client_socket, addr):
@@ -20,9 +21,6 @@ class TicTacToeServer:
             print(self.client_queue.qsize())         
         else:
             threading.Thread(target=demoAI, args=(client_socket, self.check_winner, self.is_draw)).start()
-
-
-
 
 
     def remove_client(self, client_socket):
@@ -60,10 +58,12 @@ class TicTacToeServer:
                 try:
                     print("Waiting for move from current player...")
                     data = current_player.recv(2048).decode('utf-8')
+                    
+
                     if not data:
                         print(f"Connection lost with {current_player}")
                         break
-                    print(f"Data received: {data}")
+                    print(f"Data received: {data} ")
                     if data.startswith("MOVE"):
                         _, row, col = data.split()
                         row, col = int(row), int(col)
@@ -87,11 +87,11 @@ class TicTacToeServer:
                         else:
                             current_player.send("INVALID_MOVE".encode('utf-8'))
                     
-                    elif data.startswith("SURRENDER"):
+                    elif data.startswith("SURRENDER") :
                         current_player.send("LOSE".encode('utf-8'))
                         other_player.send("WIN".encode('utf-8'))
 
-                    elif data.startswith("REPLAY"):
+                    elif data.startswith("REPLAY") :
                         board = [['' for _ in range(3)] for _ in range(3)]  
                         turn = client2 if turn == client1 else client1
                         current_player.send("REPLAY_OK TURN".encode('utf-8'))  # Thông báo cho người đang chơi

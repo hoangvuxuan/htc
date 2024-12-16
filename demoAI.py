@@ -3,6 +3,7 @@ def demoAI(player_socket, check_winner, is_draw):
     board = [['' for _ in range(3)] for _ in range(3)]#môi trường
     ai_symbol = 'O'
     player_symbol = 'X'
+    check_win = 0
 
     try:
         player_socket.send("MATCH_FOUND X".encode('utf-8'))  
@@ -10,6 +11,7 @@ def demoAI(player_socket, check_winner, is_draw):
 
             print("Waiting for player's move...")
             data = player_socket.recv(2048).decode('utf-8')
+
             if not data:
                 print("Player disconnected.")
                 break
@@ -29,11 +31,12 @@ def demoAI(player_socket, check_winner, is_draw):
                     if check_winner(board, player_symbol):
                         player_socket.send("WIN".encode('utf-8'))
                         print("Player wins!")
-                        break
+                        check_win = 1
+                         
                     elif is_draw(board):
                         player_socket.send("DRAW".encode('utf-8'))
-                        print("Game is a draw!")
-                        break
+                        print("FFFFFF AI is a draw!")
+                         
    
                     #AI đi, thêm code AI vào đoạn này
                     move_made = False
@@ -51,15 +54,23 @@ def demoAI(player_socket, check_winner, is_draw):
                     if check_winner(board, ai_symbol):
                         player_socket.send("LOSE".encode('utf-8'))
                         print("AI wins!")
-                        break
-                    elif is_draw(board):
+
+                    elif is_draw(board) and check_win == 0:
                         player_socket.send("DRAW".encode('utf-8'))
                         print("Game is a draw!")
-                        break
+                         
                 else:
                     player_socket.send("INVALID_MOVE".encode('utf-8'))
+
+            elif data.startswith("REPLAY") :
+                board = [['' for _ in range(3)] for _ in range(3)]  
+                player_socket.send("REPLAY_OK TURN".encode('utf-8'))  # Thông báo cho người đang chơi                                  
+                print(f"Game  reset for replay.")
+                check_win = 0
+            elif data.startswith("SURRENDER") :
+                player_socket.send("LOSE".encode('utf-8'))
+                check_win = 0
+              
     except Exception as e:
         print(f"Error in demoAI: {e}")
-    finally:
-        player_socket.close()
-        print("Game with AI ended.")
+  
