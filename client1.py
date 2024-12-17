@@ -91,14 +91,15 @@ class TicTacToeClient:
                     self.end_game("DRAW!")
                     
                 elif message.startswith("REPLAY_OK"):
-                    _, status = message.split() 
-                    self.symbol = "O" if self.symbol == "X" else "X"  
-                    if status == "TURN":
+                    _, status = message.split()  
+                    if status == "X":
                         self.turn = True
-                        self.status_label.config(text=f"Game restarted! Your turn. You are {self.symbol}")
+                        self.status_label.config(text=f"Game restarted! Your turn. You are X")
+                        self.symbol = "X"
                     else:
                         self.turn = False
-                        self.status_label.config(text=f"Game restarted! Waiting for opponent. You are {self.symbol}")
+                        self.status_label.config(text=f"Game restarted! Waiting for opponent. You are O")
+                        self.symbol = "O"
                     
                     for i in range(3):
                         for j in range(3):

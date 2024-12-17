@@ -111,8 +111,8 @@ class TicTacToeServer:
                     elif data.startswith("REPLAY") :
                         board = [['' for _ in range(3)] for _ in range(3)]  
                         turn = client2 if turn == client1 else client1
-                        current_player.send("REPLAY_OK TURN".encode('utf-8'))  # Thông báo cho người đang chơi
-                        other_player.send("REPLAY_OK WAIT".encode('utf-8'))  # Thông báo cho người còn lại
+                        current_player.send("REPLAY_OK X".encode('utf-8'))  # Thông báo cho người đang chơi
+                        other_player.send("REPLAY_OK O".encode('utf-8'))  # Thông báo cho người còn lại
                         print(f"Game {game_id} reset for replay.")
                     
                 except Exception as e:
