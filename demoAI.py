@@ -1,15 +1,31 @@
-def demoAI(player_socket, check_winner, is_draw):
+from mcts import mcts_tic_tac_toe
+
+def demoAI(player_socket, check_winner, is_draw, algorithm):
+    
     print("Starting a game with AI...")
     board = [['' for _ in range(3)] for _ in range(3)]#môi trường
     ai_symbol = 'O'
     player_symbol = 'X'
     check_win = 0
 
+    algorithms = {
+        "MCTS": mcts_tic_tac_toe,
+        # "SARSA": sarsa_tic_tac_toe,
+        # "Q-Learning": qlearning_tic_tac_toe,
+        # "Minimax": minimax_tic_tac_toe
+    }
+
+    if algorithm not in algorithms:
+        print(f"Error: Unsupported algorithm '{algorithm}'")
+        return
+
+    ai_function = algorithms[algorithm]  # Lấy hàm thuật toán phù hợp
+
     try:
         player_socket.send("MATCH_FOUND X".encode('utf-8'))  
         while True:
 
-            print("Waiting for player's move...")
+            print("Waiting for Player's move...")
             data = player_socket.recv(2048).decode('utf-8')
 
             if not data:
@@ -39,17 +55,12 @@ def demoAI(player_socket, check_winner, is_draw):
                          
    
                     #AI đi, thêm code AI vào đoạn này
-                    move_made = False
-                    for i in range(3):
-                        for j in range(3):
-                            if board[i][j] == '':
-                                board[i][j] = ai_symbol
-                                player_socket.send(f"OPPONENT_MOVE {i} {j}".encode('utf-8'))
-                                print(f"AI moved to {i}, {j}")
-                                move_made = True
-                                break
-                        if move_made:
-                            break
+                    move = ai_function(board, ai_symbol)
+                    row, col = move
+                    board[row][col] = ai_symbol
+                    
+                    player_socket.send(f"OPPONENT_MOVE {row} {col}".encode('utf-8'))
+                    print(f"AI moved to {row}, {col}")
 
                     if check_winner(board, ai_symbol):
                         player_socket.send("LOSE".encode('utf-8'))

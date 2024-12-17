@@ -15,12 +15,29 @@ class TicTacToeServer:
 # Đưa client vào hàng đợi
     def handle_client(self, client_socket, addr):
         print(f"Client connected: {addr}")
-
-        if client_socket.recv(2048).decode('utf-8') != "AI": 
+        ai = client_socket.recv(2048).decode('utf-8')
+        if ai == "": 
             self.client_queue.put(client_socket)  
             print(self.client_queue.qsize())         
         else:
-            threading.Thread(target=demoAI, args=(client_socket, self.check_winner, self.is_draw)).start()
+            # Xử lý AI dựa trên lựa chọn
+            match ai:
+                case "MCTS":
+                    algorithm = "MCTS"
+                case "SARSA":
+                    algorithm = "SARSA"
+                case "Q-Learning":
+                    algorithm = "Q-Learning"
+                case "Minimax":
+                    algorithm = "Minimax"
+                case _:
+                    print(f"Invalid AI selection: {ai}")
+                    client_socket.send("INVALID_AI".encode('utf-8'))
+                    client_socket.close()
+                    return
+
+            print(f"Starting AI game with algorithm: {algorithm}")
+            threading.Thread(target=demoAI, args=(client_socket, self.check_winner, self.is_draw, algorithm)).start()
 
 
     def remove_client(self, client_socket):
