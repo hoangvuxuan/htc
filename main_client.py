@@ -49,10 +49,10 @@ dropdown_label.grid(row=2, column=0, columnspan=2, pady=(10, 5))
 
 # Dropdown menu cho "Play with AI"
 ai_algorithm_var = tk.StringVar()
-ai_algorithm_var.set("MCTS")  # Giá trị mặc định trống
+ai_algorithm_var.set("DYNA")  # Giá trị mặc định trống
 
 # Danh sách thuật toán
-algorithms = ["MCTS", "SARSA", "Q-Learning", "Minimax"]
+algorithms = ["DYNA", "MCTS", "SARSA", "Q-Learning", "Minimax"]
 
 # Tạo dropdown menu
 algorithm_dropdown = ttk.Combobox(main_window, textvariable=ai_algorithm_var, values=algorithms, state="readonly", font=("Arial", 12))

@@ -22,6 +22,8 @@ class TicTacToeServer:
         else:
             # Xử lý AI dựa trên lựa chọn
             match ai:
+                case "DYNA":
+                    algorithm = "DYNA"
                 case "MCTS":
                     algorithm = "MCTS"
                 case "SARSA":

@@ -1,4 +1,4 @@
-from mcts import mcts_tic_tac_toe
+from dyna import train_dyna_q
 import random
 
 def demoAI(player_socket, check_winner, is_draw, algorithm):
@@ -12,18 +12,12 @@ def demoAI(player_socket, check_winner, is_draw, algorithm):
     check_win = 0
     cur_player = "X"
 
-    algorithms = {
-        "MCTS": mcts_tic_tac_toe,
-        # "SARSA": sarsa_tic_tac_toe,
-        # "Q-Learning": qlearning_tic_tac_toe,
-        # "Minimax": minimax_tic_tac_toe
-    }
-
-    if algorithm not in algorithms:
-        print(f"Error: Unsupported algorithm '{algorithm}'")
-        return
-
-    ai_function = algorithms[algorithm]  # Lấy hàm thuật toán phù hợp
+    match algorithm:
+        case "DYNA":
+            trained_agent = train_dyna_q()
+        case _:
+            print(f"there is no {algorithm} now")
+            return
 
     try:
         player_socket.send(f"MATCH_FOUND {player_symbol}".encode('utf-8'))  
@@ -70,23 +64,26 @@ def demoAI(player_socket, check_winner, is_draw, algorithm):
                     player_socket.send("LOSE".encode('utf-8'))
 
             elif cur_player == ai_symbol:
-                print(f"ai: {ai_symbol} + player: {player_symbol}")
                 cur_player = player_symbol
-                move = ai_function(board, ai_symbol)
-                row, col = move
-                board[row][col] = ai_symbol
-
                 if check_win == 0:
+                    print(f"ai: {ai_symbol} + player: {player_symbol}")
+                    
+                    available_actions = [(i, j) for i in range(3) for j in range(3) if board[i][j] == '']
+                    move = trained_agent.select_action(board, available_actions)
+                    row, col = move
+                    board[row][col] = ai_symbol
+
                     player_socket.send(f"OPPONENT_MOVE {row} {col}".encode('utf-8'))
                     print(f"AI moved to {row}, {col}")
+                        
 
-                if check_winner(board, ai_symbol) and check_win == 0:
-                    player_socket.send("LOSE".encode('utf-8'))
-                    print("AI wins!")
+                    if check_winner(board, ai_symbol) :
+                        player_socket.send("LOSE".encode('utf-8'))
+                        print("AI wins!")
 
-                elif is_draw(board) and check_win == 0:
-                    player_socket.send("DRAW".encode('utf-8'))
-                    print("Game is a draw!")
+                    elif is_draw(board):
+                        player_socket.send("DRAW".encode('utf-8'))
+                        print("Game is a draw!")
 
               
     except Exception as e:
